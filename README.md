@@ -61,28 +61,19 @@ Below are the evaluation metrics on 100 IMDB reviews (58 negative, 42 positive):
 
 ## 6. Interactive demo with Gradio
 
-Launch a local Gradio app to test any review against your six models:
+After running the notebook cell that defines and launches the Gradio interface, you can access the live demo at:
 
-```bash
-python -c "import emotion_evaluator; emotion_evaluator.launch_gradio()"
-```
+**http://127.0.0.1:7861**
 
-Alternatively, run inside the notebook:
-
-```python
-# In a cell
-iface.launch()
-```
+Simply open that URL in your browser, choose a model from the radio buttons, enter any movie review, and see the predicted sentiment (“Positive” or “Negative”) along with its confidence score.
 
 ## 7. Predict API with FastAPI
 
-Start the FastAPI server for programmatic predictions:
+After running the notebook cell that launches the FastAPI app, open your browser to:
 
-```bash
-uvicorn api:app --reload
-```
+**http://127.0.0.1:8000/docs**
 
-Browse to `http://127.0.0.1:8000/docs` for an interactive Swagger UI. Example request body:
+There you’ll find the interactive Swagger UI. You can test the `/predict` endpoint by clicking **Try it out**, pasting in a JSON body such as:
 
 ```json
 {
