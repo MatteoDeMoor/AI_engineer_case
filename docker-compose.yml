@@ -20,7 +20,6 @@ services:
       - "7860:7860"
     networks:
       - sentiment-net
-    # optioneel: wacht tot de api klaar is
     depends_on:
       - api
 
