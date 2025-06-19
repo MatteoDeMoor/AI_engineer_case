@@ -4,6 +4,19 @@ This repository contains a reproducible pipeline for benchmarking six pre-traine
 
 ---
 
+## Benchmark Results
+
+| Model                         | Accuracy | Precision (neg) | Recall (neg) | F1-score (neg) | Precision (pos) | Recall (pos) | F1-score (pos) |
+|-------------------------------|----------|-----------------|--------------|----------------|-----------------|--------------|----------------|
+| DistilBERT-SST2               | 0.8900   | 0.86            | 0.97         | 0.91           | 0.94            | 0.79         | 0.86           |
+| Siebert RoBERTa-large         | 0.9500   | 0.95            | 0.97         | 0.96           | 0.95            | 0.93         | 0.94           |
+| nlptown 1-5 stars             | 0.8400   | 0.94            | 0.78         | 0.85           | 0.75            | 0.93         | 0.83           |
+| TextAttack BERT-SST2          | 0.9200   | 0.92            | 0.95         | 0.93           | 0.93            | 0.88         | 0.90           |
+| TextAttack RoBERTa-SST2       | 0.9500   | 0.92            | 1.00         | 0.96           | 1.00            | 0.88         | 0.94           |
+| CardiffNLP Twitter RoBERTa    | 0.8300   | 0.80            | 0.95         | 0.87           | 0.90            | 0.67         | 0.77           |
+
+---
+
 ## 1. Clone the repository
 
 ```bash
@@ -29,20 +42,20 @@ python -m venv venv
 
 ## 3. Install & lock your dependencies
 
-1. Upgrade pip and install **pip-tools**:  
+1. Upgrade pip and install **pip-tools**:
    ```bash
    pip install --upgrade pip
    pip install pip-tools
    ```
-2. Compile your lockfile (`requirements.txt`) from your top-level specs (`requirements.in`):  
+2. Compile your lockfile (`requirements.txt`) from your top-level specs (`requirements.in`):
    ```bash
    pip-compile requirements.in --output-file=requirements.txt
    ```
-3. Install all dependencies:  
+3. Install all dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-4. (Optional) **Sync** your venv so that only those packages in `requirements.txt` remain:  
+4. (Optional) **Sync** your venv so that only those packages in `requirements.txt` remain:
    ```bash
    pip-sync requirements.txt
    ```
@@ -69,7 +82,7 @@ Build and start both the FastAPI backend and the Gradio UI in separate container
 docker-compose up --build
 ```
 
-- **FastAPI** will be available at → `http://localhost:8000/docs`  
+- **FastAPI** will be available at → `http://localhost:8000/docs`
 - **Gradio demo** will be available at → `http://localhost:7860`
 
 Use **Ctrl+C** to stop both services, or in a new shell:
@@ -80,7 +93,7 @@ docker-compose down
 
 ---
 
-## 7. Version control & workflow
+## 6. Version control & workflow
 
 - **Commit & push** your changes:
   ```bash
@@ -90,17 +103,17 @@ docker-compose down
   git push
   ```
 - **.gitignore** should include:
-```
-result/
-venv/
-```
+  ```
+  result/
+  venv/
+  ```
 
 ---
 
-## 8. Further development
+## 7. Further development
 
-- **API-only** deployments: edit `api/app_api.py` and build `api/Dockerfile`  
-- **UI-only** deployments: edit `ui/app_gradio.py` and build `ui/Dockerfile`  
-- **CI/CD**: see `.github/workflows/ci.yml` for linting, testing, lockfile compilation and Docker image builds.  
+- **API-only** deployments: edit `api/app_api.py` and build `api/Dockerfile`
+- **UI-only** deployments: edit `ui/app_gradio.py` and build `ui/Dockerfile`
+- **CI/CD**: see `.github/workflows/ci.yml` for linting, testing, lockfile compilation and Docker image builds.
 
 Happy benchmarking & deploying!
