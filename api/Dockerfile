@@ -9,7 +9,6 @@ RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir -r requirements.txt
 
 # Copy the shared model loader and the API code
-# Paths are relative to the build context (project root)
 COPY models.py .
 COPY api/app_api.py .
 

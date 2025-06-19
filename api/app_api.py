@@ -1,8 +1,5 @@
-# app_api.py
-"""
-FastAPI application for IMDB review sentiment prediction.
-Exposes a POST endpoint `/predict` that takes a review and model name.
-"""
+# FastAPI application for IMDB review sentiment prediction.
+# Exposes a POST endpoint `/predict` that takes a review and model name.
 import nest_asyncio
 nest_asyncio.apply()
 
