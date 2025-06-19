@@ -1,5 +1,6 @@
-# FastAPI application for IMDB review sentiment prediction.
-# Exposes a POST endpoint `/predict` that takes a review and model name.
+# FastAPI application for IMDB review sentiment prediction
+# Exposes a POST endpoint `/predict` that takes a review and model name
+
 import nest_asyncio
 nest_asyncio.apply()
 
@@ -42,15 +43,13 @@ class PredictionResponse(BaseModel):
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(req: ReviewRequest):
-    """
-    Predict sentiment for given text using the specified model.
-    """
+    # Predict sentiment for given text using the specified model
     if req.model not in pipeline_map:
         return {
             "model": req.model,
             "label": "",
             "score": 0.0,
-            "error": f"Unknown model '{req.model}'. Choose from {list(pipeline_map.keys())}"  # type: ignore
+            "error": f"Unknown model '{req.model}'. Choose from {list(pipeline_map.keys())}"
         }
     pipe = pipeline_map[req.model]
     # Single inference call; pipeline truncates internally
