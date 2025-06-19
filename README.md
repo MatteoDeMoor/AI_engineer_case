@@ -1,4 +1,4 @@
-# IMDB Sentiment Benchmark
+# NLP Sentiment Analysis
 
 This repository contains a reproducible pipeline for benchmarking six pre-trained sentiment analysis models on the IMDB movie reviews dataset, plus an interactive Gradio demo and a FastAPI prediction endpoint.
 
@@ -7,8 +7,8 @@ This repository contains a reproducible pipeline for benchmarking six pre-traine
 ## 1. Clone the repository
 
 ```bash
-git clone https://github.com/matteodemoor/AI_engineer_case
-cd AI_engineer_case
+git clone https://github.com/MatteoDeMoor/NLP_Sentiment_Analysis
+cd NLP_Sentiment_Analysis
 ```
 
 ---
@@ -80,18 +80,6 @@ docker-compose down
 
 ---
 
-## 6. Jupyter Notebook (optional)
-
-If you still want to explore interactively:
-
-```bash
-jupyter notebook
-```
-
-Open `emotion_evaluator.ipynb`, select the `venv` kernel, and step through the data loading, model pipelines, and evaluation cells.
-
----
-
 ## 7. Version control & workflow
 
 - **Commit & push** your changes:
@@ -103,11 +91,8 @@ Open `emotion_evaluator.ipynb`, select the `venv` kernel, and step through the d
   ```
 - **.gitignore** should include:
   ```
-  venv/
-  result/
-  data/
-  __pycache__/
-  *.pyc
+result/
+venv/
   ```
 
 ---
