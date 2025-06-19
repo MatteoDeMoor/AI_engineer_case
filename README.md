@@ -1,6 +1,8 @@
 # IMDB Sentiment Benchmark
 
-This repository contains a reproducible pipeline for benchmarking six pre-trained sentiment analysis models on the IMDB movie reviews dataset.
+This repository contains a reproducible pipeline for benchmarking six pre-trained sentiment analysis models on the IMDB movie reviews dataset, plus an interactive Gradio demo and a FastAPI prediction endpoint.
+
+---
 
 ## 1. Clone the repository
 
@@ -9,92 +11,111 @@ git clone https://github.com/matteodemoor/AI_engineer_case
 cd AI_engineer_case
 ```
 
-## 2. Set up a virtual environment
+---
 
-Create and activate a Python virtual environment (venv) in the project folder:
+## 2. Set up a Python virtual environment
+
+Create and activate a new venv in your project folder:
+
+```bash
+python -m venv venv
+```
+
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 ```
 
-Upgrade `pip` and install dependencies:
+---
+
+## 3. Install & lock your dependencies
+
+1. Upgrade pip and install **pip-tools**:  
+   ```bash
+   pip install --upgrade pip
+   pip install pip-tools
+   ```
+2. Compile your lockfile (`requirements.txt`) from your top-level specs (`requirements.in`):  
+   ```bash
+   pip-compile requirements.in --output-file=requirements.txt
+   ```
+3. Install all dependencies:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. (Optional) **Sync** your venv so that only those packages in `requirements.txt` remain:  
+   ```bash
+   pip-sync requirements.txt
+   ```
+
+---
+
+## 4. Run the sentiment benchmark
+
+This will load the IMDB dataset, run all six models in batches, save a CSV of raw scores, and produce a `benchmark_report.txt` with accuracy & classification metrics:
+
 ```bash
-pip install --upgrade pip
-pip install -r requirements.txt
+python sentiment_benchmark.py
 ```
 
-## 3. Notebook walkthrough
+Output files will be written to the `result/` directory.
 
-Open the Jupyter notebook to explore data loading, model pipelines, and evaluation metrics:
+---
+
+## 5. Launch the services with Docker Compose
+
+Build and start both the FastAPI backend and the Gradio UI in separate containers:
+
 ```bash
-jupyter notebook emotion_evaluator.ipynb
-```
-Make sure to select the `.venv` kernel when prompted.
-
-## 4. Sentiment analysis pipelines
-
-We evaluate the following six models via Hugging Face Transformers:
-
-| Key                  | Model ID                                                        | Description                                           |
-|----------------------|-----------------------------------------------------------------|-------------------------------------------------------|
-| `distilbert`         | `distilbert-base-uncased-finetuned-sst-2-english`               | DistilBERT fine-tuned on SST-2 for speed & accuracy   |
-| `roberta_large`      | `siebert/sentiment-roberta-large-english`                       | Large RoBERTa fine-tuned on SST-2 for top accuracy    |
-| `multilingual`       | `nlptown/bert-base-multilingual-uncased-sentiment`             | Multilingual BERT for 5-star ratings                  |
-| `textattack_bert`    | `textattack/bert-base-uncased-SST-2`                           | BERT (TextAttack fork) on SST-2                       |
-| `textattack_roberta` | `textattack/roberta-base-SST-2`                                | RoBERTa (TextAttack fork) on SST-2                    |
-| `twitter_roberta`    | `cardiffnlp/twitter-roberta-base-sentiment`                     | Twitter-tuned RoBERTa with neutral class              |
-
-## 5. Benchmark results
-
-Below are the evaluation metrics on 100 IMDB reviews (58 negative, 42 positive):
-
-| Model                         | Accuracy | Precision (neg) | Recall (neg) | Precision (pos) | Recall (pos) |
-|-------------------------------|----------|-----------------|--------------|-----------------|--------------|
-| DistilBERT-SST2               | 0.86     | 0.87            | 0.90         | 0.85            | 0.81         |
-| Siebert RoBERTa-large         | 0.93     | 0.96            | 0.91         | 0.89            | 0.95         |
-| nlptown 1-5 stars             | 0.81     | 0.91            | 0.74         | 0.72            | 0.90         |
-| TextAttack BERT-SST2          | 0.87     | 0.88            | 0.90         | 0.85            | 0.83         |
-| TextAttack RoBERTa-SST2       | 0.88     | 0.86            | 0.95         | 0.92            | 0.79         |
-| CardiffNLP Twitter RoBERTa    | 0.83     | 0.81            | 0.93         | 0.88            | 0.69         |
-
-*Macro- and weighted averages are also reported in the notebook and `result/benchmark_report.txt`.*
-
-## 6. Interactive demo with Gradio
-
-After running the notebook cell that defines and launches the Gradio interface, you can access the live demo at:
-
-**http://127.0.0.1:7861**
-
-Simply open that URL in your browser, choose a model from the radio buttons, enter any movie review, and see the predicted sentiment (“Positive” or “Negative”) along with its confidence score.
-
-## 7. Predict API with FastAPI
-
-After running the notebook cell that launches the FastAPI app, open your browser to:
-
-**http://127.0.0.1:8000/docs**
-
-There you’ll find the interactive Swagger UI. You can test the `/predict` endpoint by clicking **Try it out**, pasting in a JSON body such as:
-
-```json
-{
-  "text": "I loved this movie!",
-  "model": "RoBERTa-large SST2"
-}
+docker-compose up --build
 ```
 
-## 8. Version control & workflow
+- **FastAPI** will be available at → `http://localhost:8000/docs`  
+- **Gradio demo** will be available at → `http://localhost:7860`
 
-- **Branching model**  
+Use **Ctrl+C** to stop both services, or in a new shell:
+
+```bash
+docker-compose down
+```
+
+---
+
+## 6. Jupyter Notebook (optional)
+
+If you still want to explore interactively:
+
+```bash
+jupyter notebook
+```
+
+Open `emotion_evaluator.ipynb`, select the `venv` kernel, and step through the data loading, model pipelines, and evaluation cells.
+
+---
+
+## 7. Version control & workflow
+
+- **Commit & push** your changes:
   ```bash
-  # make changes...
   git status
   git add .
-  git commit -m "message"
-  git push -u origin
+  git commit -m "Your message"
+  git push
+  ```
+- **.gitignore** should include:
+  ```
+  venv/
+  result/
+  data/
+  __pycache__/
+  *.pyc
   ```
 
-- **Ignore files**  
-  Add to `.gitignore`:  
-  ```
-  result/
-  ```
+---
+
+## 8. Further development
+
+- **API-only** deployments: edit `api/app_api.py` and build `api/Dockerfile`  
+- **UI-only** deployments: edit `ui/app_gradio.py` and build `ui/Dockerfile`  
+- **CI/CD**: see `.github/workflows/ci.yml` for linting, testing, lockfile compilation and Docker image builds.  
+
+Happy benchmarking & deploying!
