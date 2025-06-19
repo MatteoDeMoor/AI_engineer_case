@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: sentiment-api
+    ports:
+      - "8000:8000"
+    networks:
+      - sentiment-net
+
+  ui:
+    build:
+      context: .
+      dockerfile: ui/Dockerfile
+    container_name: sentiment-ui
+    ports:
+      - "7860:7860"
+    networks:
+      - sentiment-net
+    # optioneel: wacht tot de api klaar is
+    depends_on:
+      - api
+
+networks:
+  sentiment-net:
+    driver: bridge
