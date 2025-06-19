@@ -1,1 +1,3 @@
 result/
+venv
+data/IMDB Dataset.csv
