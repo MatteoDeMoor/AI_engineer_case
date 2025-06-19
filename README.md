@@ -90,10 +90,10 @@ docker-compose down
   git push
   ```
 - **.gitignore** should include:
-  ```
+```
 result/
 venv/
-  ```
+```
 
 ---
 
