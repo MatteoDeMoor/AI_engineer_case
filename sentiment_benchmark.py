@@ -17,6 +17,9 @@ INPUT_PATH = Path('data') / 'IMDB-movie-reviews.csv'
 OUTPUT_CSV = Path('result') / 'sentiment_benchmarks.csv'
 BENCHMARK_REPORT = Path('result') / 'benchmark_report.txt'
 
+# Ensure the output directory exists
+Path('result').mkdir(parents=True, exist_ok=True)
+
 # Load data
 df = pd.read_csv(INPUT_PATH, sep=';', encoding='ISO-8859-1')
 
