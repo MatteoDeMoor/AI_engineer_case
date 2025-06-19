@@ -1,4 +1,3 @@
-# This module loads and caches sentiment-analysis pipelines for use in the API and UI.
 import os
 from transformers import pipeline
 
@@ -11,8 +10,8 @@ BATCH_SIZE = 64
 
 
 def load_pipelines():
-    # Load and return a dictionary of sentiment-analysis pipelines.
-    # Keys are model identifiers, values are HuggingFace pipeline objects.
+    # Load and return a dictionary of sentiment-analysis pipelines
+    # Keys are model identifiers, values are HuggingFace pipeline objects
     return {
         "distilbert": pipeline(
             "sentiment-analysis",
