@@ -1,4 +1,4 @@
-# IMDB Sentiment Benchmark (AI Engineer Technical Case)
+# IMDB Sentiment Benchmark
 
 This repository contains a reproducible pipeline for benchmarking six pre-trained sentiment analysis models on the IMDB movie reviews dataset.
 
