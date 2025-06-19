@@ -1,10 +1,9 @@
-# app_gradio.py
-"""
-Standalone Gradio app for IMDB review sentiment analysis.
-Imports pretrained pipelines from models.py and exposes a simple UI.
-"""
+# Standalone Gradio app for IMDB review sentiment analysis
+# Imports pretrained pipelines from models.py and exposes a simple UI
+
 import gradio as gr
 from transformers import pipeline
+
 from models import pipelines  # dict of pretrained pipelines
 
 # Map human-readable names to pipeline instances
@@ -29,16 +28,7 @@ label_mappers = {
 
 # Classification function for Gradio
 def classify(text: str, model_name: str):
-    """
-    Run the selected pipeline on input text and map raw label to binary sentiment.
-
-    Args:
-        text (str): Input review text.
-        model_name (str): Human-readable model choice.
-
-    Returns:
-        Tuple[str, float]: Final label (Positive/Negative) and confidence score.
-    """
+    # Run the selected pipeline on input text and map raw label to binary sentiment.
     pipe = pipeline_map[model_name]
     # Truncate to max length expected by pipelines
     truncated = text[:512]
