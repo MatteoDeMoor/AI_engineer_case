@@ -35,10 +35,9 @@ label_mappers = {
 }
 
 def classify(text: str, model_name: str):
-    """
-    Run sentiment analysis on a single review using the specified model.
-    Returns a human-readable label and confidence score.
-    """
+    # Run sentiment analysis on a single review using the specified model
+    # Returns a human-readable label and confidence score
+    
     pipe = pipeline_map[model_name]
     # Perform inference with truncation
     result = pipe(text[:512], truncation=True, max_length=512)[0]

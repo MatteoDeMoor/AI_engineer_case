@@ -29,10 +29,9 @@ app = FastAPI(title="IMDB Sentiment API")
 
 @app.on_event("startup")
 def load_models():
-    """
-    Startup event handler: load each sentiment-analysis pipeline once,
-    printing progress, and then build the human-readable pipeline map.
-    """
+    # Startup event handler: load each sentiment-analysis pipeline once,
+    # printing progress, and then build the human-readable pipeline map.
+
     print("⏳ Loading model pipelines...", flush=True)
     for key, constructor in pipeline_constructors.items():
         print(f"⏳ Loading {key}...", end="", flush=True)
@@ -62,12 +61,8 @@ class PredictionResponse(BaseModel):
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(req: ReviewRequest):
-    """
-    Predict endpoint:
-    - Validates the requested model name.
-    - Runs one inference call with truncation.
-    - Applies the label mapper to produce "Positive"/"Negative".
-    """
+    # Predict endpoint
+    
     if req.model not in pipeline_map:
         # Return an error structure if the model name is unknown
         return {
