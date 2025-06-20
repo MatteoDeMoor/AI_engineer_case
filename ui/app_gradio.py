@@ -37,7 +37,7 @@ label_mappers = {
 def classify(text: str, model_name: str):
     # Run sentiment analysis on a single review using the specified model
     # Returns a human-readable label and confidence score
-    
+
     pipe = pipeline_map[model_name]
     # Perform inference with truncation
     result = pipe(text[:512], truncation=True, max_length=512)[0]
@@ -62,6 +62,7 @@ iface = gr.Interface(
 )
 
 # Launch the Gradio app, binding to all interfaces
+print("🚀 Gradio UI is now available at  http://localhost:7860", flush=True)
 iface.launch(
     server_name="0.0.0.0",
     server_port=7860,
