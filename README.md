@@ -18,11 +18,11 @@ cd NLP_Sentiment_Analysis
 Create and activate a new venv in your project folder:
 
 ```bash
-python -m venv venv
+python -m venv venvNLP
 ```
 
 ```powershell
-.\venv\Scripts\Activate.ps1
+.\venvNLP\Scripts\Activate.ps1
 ```
 
 ---
@@ -90,7 +90,7 @@ docker-compose down
 - **.gitignore** should include:
   ```
   result/
-  venv/
+  venvNLP/
   ```
 
 ---

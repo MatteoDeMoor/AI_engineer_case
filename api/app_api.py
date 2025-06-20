@@ -9,7 +9,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 
-from models import pipeline_constructors, pipelines  # constructors: callables to create pipelines; pipelines: initially empty
+from models import get_pipeline, load_all_pipelines
 
 # We will populate this mapping once models are loaded in the startup event
 pipeline_map = {}
@@ -27,27 +27,25 @@ label_mappers = {
 # Initialize FastAPI app
 app = FastAPI(title="IMDB Sentiment API")
 
+# Startup event handler: preload all pipelines into the HF cache.
 @app.on_event("startup")
 def load_models():
-    # Startup event handler: load each sentiment-analysis pipeline once,
-    # printing progress, and then build the human-readable pipeline map.
+    print("⏳ Preloading all sentiment-analysis pipelines...", flush=True)
+    # Load all models into cache
+    load_all_pipelines()
 
-    print("⏳ Loading model pipelines...", flush=True)
-    for key, constructor in pipeline_constructors.items():
-        print(f"⏳ Loading {key}...", end="", flush=True)
-        pipelines[key] = constructor()   # instantiate the pipeline
-        print(" ✅", flush=True)
-
-    # After all pipelines are ready, build the mapping from display names to pipeline objects
+    # Build the mapping from display names to internal model keys
     global pipeline_map
     pipeline_map = {
-        "DistilBERT-SST2":        pipelines["distilbert"],
-        "RoBERTa-large SST2":     pipelines["roberta_large"],
-        "nlptown Multilingual":   pipelines["multilingual"],
-        "TextAttack BERT-SST2":   pipelines["textattack_bert"],
-        "TextAttack RoBERTa-SST2":pipelines["textattack_roberta"],
-        "Twitter RoBERTa":        pipelines["twitter_roberta"],
+        "DistilBERT-SST2":        "distilbert",
+        "RoBERTa-large SST2":     "roberta_large",
+        "nlptown Multilingual":   "multilingual",
+        "TextAttack BERT-SST2":   "textattack_bert",
+        "TextAttack RoBERTa-SST2":"textattack_roberta",
+        "Twitter RoBERTa":        "twitter_roberta",
     }
+
+    print("🚀 API is now available at http://localhost:8000/docs", flush=True)
 
 # Pydantic models for request and response bodies
 class ReviewRequest(BaseModel):
@@ -61,10 +59,8 @@ class PredictionResponse(BaseModel):
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(req: ReviewRequest):
-    # Predict endpoint
-    
+    # Check if requested model is available
     if req.model not in pipeline_map:
-        # Return an error structure if the model name is unknown
         return {
             "model": req.model,
             "label": "",
@@ -72,17 +68,19 @@ def predict(req: ReviewRequest):
             "error": f"Unknown model '{req.model}'. Choose from {list(pipeline_map.keys())}"
         }
 
-    # Perform the inference
-    pipe = pipeline_map[req.model]
-    result = pipe(req.text[:512], truncation=True, max_length=512)[0]
+    # Retrieve pipeline
+    model_key = pipeline_map[req.model]
+    pipe = get_pipeline(model_key)
 
+    # Perform the inference (truncate to max length)
+    result = pipe(req.text[:512], truncation=True, max_length=512)[0]
     raw_label = result["label"]
     score = float(result["score"])
+
+    # Map raw label to human-readable
     label = label_mappers[req.model](raw_label)
 
-    # Return the structured response
     return PredictionResponse(model=req.model, label=label, score=round(score, 4))
 
 if __name__ == "__main__":
-    # Run the app with Uvicorn for local development with auto-reload
     uvicorn.run("app_api:app", host="0.0.0.0", port=8000, reload=True)

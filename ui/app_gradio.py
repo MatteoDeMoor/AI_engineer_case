@@ -1,27 +1,24 @@
 # Gradio UI for IMDB movie review sentiment analysis
-# Loads all sentiment-analysis pipelines at startup and exposes a simple interface
+# Loads all sentiment-analysis pipelines at startup via a cached factory
 
 import nest_asyncio
 nest_asyncio.apply()
 
 import gradio as gr
-from models import pipeline_constructors, pipelines  # constructors + initially empty pipelines dict
+from models import get_pipeline, load_all_pipelines
 
-# Load all pipelines with detailed progress logging
-print("⏳ Beginning to load model pipelines for Gradio UI...", flush=True)
-for key, constructor in pipeline_constructors.items():
-    print(f"⏳ Loading {key}...", flush=True)
-    pipelines[key] = constructor()
-    print(f"✅ Successfully loaded {key}", flush=True)
+# Preload all pipelines into the HF cache for fast inference
+print("⏳ Preloading all sentiment-analysis pipelines into cache...", flush=True)
+load_all_pipelines()
 
-# Map human-readable names to pipeline instances
+# Map human-readable names to internal model keys for get_pipeline
 pipeline_map = {
-    "DistilBERT-SST2":        pipelines["distilbert"],
-    "RoBERTa-large SST2":     pipelines["roberta_large"],
-    "nlptown Multilingual":   pipelines["multilingual"],
-    "TextAttack BERT-SST2":   pipelines["textattack_bert"],
-    "TextAttack RoBERTa-SST2":pipelines["textattack_roberta"],
-    "Twitter RoBERTa":        pipelines["twitter_roberta"],
+    "DistilBERT-SST2":        "distilbert",
+    "RoBERTa-large SST2":     "roberta_large",
+    "nlptown Multilingual":   "multilingual",
+    "TextAttack BERT-SST2":   "textattack_bert",
+    "TextAttack RoBERTa-SST2":"textattack_roberta",
+    "Twitter RoBERTa":        "twitter_roberta",
 }
 
 # Unified label mappers for each model
@@ -35,19 +32,25 @@ label_mappers = {
 }
 
 def classify(text: str, model_name: str):
-    # Run sentiment analysis on a single review using the specified model
-    # Returns a human-readable label and confidence score
+    """
+    Run sentiment analysis using the specified model and return
+    a human-readable label and confidence score.
+    """
+    # Fetch the pipeline via the cached factory
+    model_key = pipeline_map[model_name]
+    pipe = get_pipeline(model_key)
 
-    pipe = pipeline_map[model_name]
-    # Perform inference with truncation
+    # Perform inference with truncation to max length
     result = pipe(text[:512], truncation=True, max_length=512)[0]
     raw_label = result["label"]
     score = float(result["score"])
+
+    # Convert raw label into Positive/Negative
     label = label_mappers[model_name](raw_label)
-    return label, score
+    return label, round(score, 4)
 
 # Build the Gradio interface
-iface = gr.Interface(
+face = gr.Interface(
     fn=classify,
     inputs=[
         gr.Textbox(lines=5, placeholder="Type a movie review…", label="Review"),
@@ -61,9 +64,9 @@ iface = gr.Interface(
     description="Choose a model and see whether the review is Positive or Negative.",
 )
 
-# Launch the Gradio app, binding to all interfaces
-print("🚀 Gradio UI is now available at  http://localhost:7860", flush=True)
-iface.launch(
+# Launch the Gradio app on all interfaces
+print("🚀 Gradio UI is now available at http://localhost:7860", flush=True)
+face.launch(
     server_name="0.0.0.0",
     server_port=7860,
     quiet=False,

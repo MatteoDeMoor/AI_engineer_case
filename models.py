@@ -1,5 +1,6 @@
 import os
 from transformers import pipeline
+from functools import lru_cache
 
 # prevent tokenisers from spawning too many threads
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
@@ -48,5 +49,23 @@ pipeline_constructors = {
     ),
 }
 
-# This dict will be filled in app_api.py during startup
-pipelines = {}
+# Cache and retrieve pipelines so each model is loaded only once
+@lru_cache(maxsize=None)
+def get_pipeline(model_key: str):
+    """
+    Return a sentiment-analysis pipeline for the given model key.
+    Raises a ValueError if the key is unknown.
+    """
+    try:
+        constructor = pipeline_constructors[model_key]
+    except KeyError:
+        raise ValueError(f"Unknown model '{model_key}'. Available models: {list(pipeline_constructors.keys())}")
+    return constructor()
+
+
+def load_all_pipelines():
+    """
+    Pre-load all pipelines into the cache. Call this once at startup if desired.
+    """
+    for key in pipeline_constructors:
+        get_pipeline(key)

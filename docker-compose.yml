@@ -10,6 +10,8 @@ services:
       - "8000:8000"
     networks:
       - sentiment-net
+    volumes:
+      - hf_cache:/root/.cache/huggingface/transformers
 
   ui:
     build:
@@ -22,7 +24,12 @@ services:
       - sentiment-net
     depends_on:
       - api
+    volumes:
+      - hf_cache:/root/.cache/huggingface/transformers
 
 networks:
   sentiment-net:
     driver: bridge
+
+volumes:
+  hf_cache:
