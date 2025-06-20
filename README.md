@@ -4,19 +4,6 @@ This repository contains a reproducible pipeline for benchmarking six pre-traine
 
 ---
 
-## Benchmark Results
-
-| Model                         | Accuracy | Precision (neg) | Recall (neg) | F1-score (neg) | Precision (pos) | Recall (pos) | F1-score (pos) |
-|-------------------------------|----------|-----------------|--------------|----------------|-----------------|--------------|----------------|
-| DistilBERT-SST2               | 0.8900   | 0.86            | 0.97         | 0.91           | 0.94            | 0.79         | 0.86           |
-| Siebert RoBERTa-large         | 0.9500   | 0.95            | 0.97         | 0.96           | 0.95            | 0.93         | 0.94           |
-| nlptown 1-5 stars             | 0.8400   | 0.94            | 0.78         | 0.85           | 0.75            | 0.93         | 0.83           |
-| TextAttack BERT-SST2          | 0.9200   | 0.92            | 0.95         | 0.93           | 0.93            | 0.88         | 0.90           |
-| TextAttack RoBERTa-SST2       | 0.9500   | 0.92            | 1.00         | 0.96           | 1.00            | 0.88         | 0.94           |
-| CardiffNLP Twitter RoBERTa    | 0.8300   | 0.80            | 0.95         | 0.87           | 0.90            | 0.67         | 0.77           |
-
----
-
 ## 1. Clone the repository
 
 ```bash
@@ -42,20 +29,20 @@ python -m venv venv
 
 ## 3. Install & lock your dependencies
 
-1. Upgrade pip and install **pip-tools**:
+1. Upgrade pip and install **pip-tools**:  
    ```bash
    pip install --upgrade pip
    pip install pip-tools
    ```
-2. Compile your lockfile (`requirements.txt`) from your top-level specs (`requirements.in`):
+2. Compile your lockfile (`requirements.txt`) from your top-level specs (`requirements.in`):  
    ```bash
    pip-compile requirements.in --output-file=requirements.txt
    ```
-3. Install all dependencies:
+3. Install all dependencies:  
    ```bash
    pip install -r requirements.txt
    ```
-4. (Optional) **Sync** your venv so that only those packages in `requirements.txt` remain:
+4. (Optional) **Sync** your venv so that only those packages in `requirements.txt` remain:  
    ```bash
    pip-sync requirements.txt
    ```
@@ -69,8 +56,6 @@ This will load the IMDB dataset, run all six models in batches, save a CSV of ra
 ```bash
 python sentiment_benchmark.py
 ```
-
-Output files will be written to the `result/` directory.
 
 ---
 
@@ -110,10 +95,24 @@ docker-compose down
 
 ---
 
-## 7. Further development
+## Benchmark Results
 
-- **API-only** deployments: edit `api/app_api.py` and build `api/Dockerfile`
-- **UI-only** deployments: edit `ui/app_gradio.py` and build `ui/Dockerfile`
-- **CI/CD**: see `.github/workflows/ci.yml` for linting, testing, lockfile compilation and Docker image builds.
+| Model                         | Accuracy | Precision (neg) | Recall (neg) | F1-score (neg) | Precision (pos) | Recall (pos) | F1-score (pos) |
+|-------------------------------|----------|-----------------|--------------|----------------|-----------------|--------------|----------------|
+| DistilBERT-SST2               | 0.8900   | 0.86            | 0.97         | 0.91           | 0.94            | 0.79         | 0.86           |
+| Siebert RoBERTa-large         | 0.9500   | 0.95            | 0.97         | 0.96           | 0.95            | 0.93         | 0.94           |
+| nlptown 1-5 stars             | 0.8400   | 0.94            | 0.78         | 0.85           | 0.75            | 0.93         | 0.83           |
+| TextAttack BERT-SST2          | 0.9200   | 0.92            | 0.95         | 0.93           | 0.93            | 0.88         | 0.90           |
+| TextAttack RoBERTa-SST2       | 0.9500   | 0.92            | 1.00         | 0.96           | 1.00            | 0.88         | 0.94           |
+| CardiffNLP Twitter RoBERTa    | 0.8300   | 0.80            | 0.95         | 0.87           | 0.90            | 0.67         | 0.77           |
 
-Happy benchmarking & deploying!
+---
+
+## License
+
+```text
+Copyright (c) 2025 Matteo De Moor
+All Rights Reserved.
+
+No permission is granted to copy, modify or redistribute this software without explicit written consent from the author.
+```
